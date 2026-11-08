@@ -45,6 +45,7 @@ export const api = {
 
   // dashboard
   getDashboard: () => request("/dashboard"),
+  getClock: () => request("/clock"),
 
   // projects
   getProjects: () => request("/projects"),

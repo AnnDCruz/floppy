@@ -15,6 +15,7 @@ const proposalsRouter = require("./routes/proposals");
 const agentRouter = require("./routes/agent");
 const eventsRouter = require("./routes/events");
 const notesRouter = require("./routes/notes");
+const clockRouter = require("./routes/clock");
 
 const app = express();
 app.use(cors());
@@ -34,6 +35,7 @@ app.use("/api/proposals", proposalsRouter);
 app.use("/api/agent", agentRouter);
 app.use("/api/events", eventsRouter);
 app.use("/api/notes", notesRouter);
+app.use("/api/clock", clockRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

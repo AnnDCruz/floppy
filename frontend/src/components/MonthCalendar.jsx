@@ -13,23 +13,20 @@ function pad(n) {
 function toDateStr(y, m, d) {
   return `${y}-${pad(m + 1)}-${pad(d)}`;
 }
-function todayStr() {
-  const d = new Date();
-  return toDateStr(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
 export default function MonthCalendar({ subjects }) {
-  const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth()); // 0-indexed
+  const [year, setYear] = useState(null);
+  const [month, setMonth] = useState(null); // 0-indexed
+  const [today, setToday] = useState(null);
   const [deadlines, setDeadlines] = useState([]);
   const [sessionDays, setSessionDays] = useState(new Set());
   const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([]);
   const [eventDraft, setEventDraft] = useState(null);
-  const today = todayStr();
 
-  const monthLabel = new Date(year, month, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  const monthLabel =
+    year === null || month === null
+      ? "Loading calendar…"
+      : new Date(year, month, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
   // Soft spotlight that follows the cursor inside a day cell (read by theme.css).
   const glow = (e) => {
@@ -41,12 +38,13 @@ export default function MonthCalendar({ subjects }) {
   };
 
   const goToday = () => {
-    const d = new Date();
-    setYear(d.getFullYear());
-    setMonth(d.getMonth());
+    if (!today) return;
+    setYear(Number(today.slice(0, 4)));
+    setMonth(Number(today.slice(5, 7)) - 1);
   };
 
   const load = async () => {
+    if (year === null || month === null) return;
     const monthStr = `${year}-${pad(month + 1)}`;
     const [dl, ev] = await Promise.all([api.getDeadlines({ month: monthStr }), api.getEvents({ month: monthStr })]);
     setDeadlines(dl);
@@ -60,11 +58,29 @@ export default function MonthCalendar({ subjects }) {
   };
 
   useEffect(() => {
+    let cancelled = false;
+    api
+      .getClock()
+      .then(({ date }) => {
+        if (cancelled) return;
+        setToday(date);
+        setYear(Number(date.slice(0, 4)));
+        setMonth(Number(date.slice(5, 7)) - 1);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (year === null || month === null) return;
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, month]);
 
   const cells = useMemo(() => {
+    if (year === null || month === null) return [];
     const firstOfMonth = new Date(year, month, 1);
     const startDow = (firstOfMonth.getDay() + 6) % 7; // weeks start on Monday
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -104,7 +120,8 @@ export default function MonthCalendar({ subjects }) {
 
   // New events default to today, or the 1st when browsing another month.
   const openAddEvent = () => {
-    const inView = today.startsWith(`${year}-${pad(month + 1)}`);
+    if (year === null || month === null) return;
+    const inView = today && today.startsWith(`${year}-${pad(month + 1)}`);
     setEventDraft({ event_date: inView ? today : toDateStr(year, month, 1) });
   };
 
@@ -123,19 +140,24 @@ export default function MonthCalendar({ subjects }) {
 
   return (
     <div className="cal-wrap">
-      <button className="sq-btn sq-add" onClick={openAddEvent} title="Add an event">
+      <button
+        className="sq-btn sq-add"
+        onClick={openAddEvent}
+        title="Add an event"
+        disabled={year === null || month === null}
+      >
         <span className="plus">+</span>
         <span className="label">Add event</span>
       </button>
       <TopPill className="cal-pill">
-        <button className="cal-arrow" onClick={prevMonth} aria-label="Previous month">
+        <button className="cal-arrow" onClick={prevMonth} aria-label="Previous month" disabled={month === null}>
           ‹
         </button>
         <div className="cal-month">{monthLabel.toUpperCase()}</div>
-        <button className="cal-today" onClick={goToday} title="Jump to today">
+        <button className="cal-today" onClick={goToday} title="Jump to today" disabled={!today}>
           Today
         </button>
-        <button className="cal-arrow" onClick={nextMonth} aria-label="Next month">
+        <button className="cal-arrow" onClick={nextMonth} aria-label="Next month" disabled={month === null}>
           ›
         </button>
       </TopPill>

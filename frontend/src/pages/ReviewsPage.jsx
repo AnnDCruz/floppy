@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../api";
 
-function daysUntil(dateStr) {
-  const today = new Date().toISOString().slice(0, 10);
-  const diff = Math.round((new Date(dateStr) - new Date(today)) / 86400000);
+function daysUntil(dateStr, today) {
+  const diff = Math.round(
+    (new Date(`${dateStr}T00:00:00Z`) - new Date(`${today}T00:00:00Z`)) / 86400000
+  );
   if (diff < 0) return `${Math.abs(diff)}d overdue`;
   if (diff === 0) return "Due today";
   if (diff === 1) return "Due tomorrow";
@@ -12,14 +13,16 @@ function daysUntil(dateStr) {
 
 export default function ReviewsPage({ subjects, refreshKey }) {
   const [reviews, setReviews] = useState(null);
+  const [today, setToday] = useState(null);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState({ concept: "", subject_id: "", interval_days: 4 });
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ concept: "", subject_id: "", interval_days: 4 });
 
   const load = async () => {
-    const rows = await api.getReviews();
+    const [rows, clock] = await Promise.all([api.getReviews(), api.getClock()]);
     setReviews(rows);
+    setToday(clock.date);
   };
 
   useEffect(() => {
@@ -71,9 +74,7 @@ export default function ReviewsPage({ subjects, refreshKey }) {
     await load();
   };
 
-  if (!reviews) return <div className="loading-state">Loading reviews…</div>;
-
-  const today = new Date().toISOString().slice(0, 10);
+  if (!reviews || !today) return <div className="loading-state">Loading reviews…</div>;
 
   return (
     <>
@@ -183,7 +184,7 @@ export default function ReviewsPage({ subjects, refreshKey }) {
                   </div>
                 </div>
                 <div className={`review-due${r.next_due_date <= today ? " due-today" : ""}`}>
-                  {daysUntil(r.next_due_date)}
+                  {daysUntil(r.next_due_date, today)}
                 </div>
                 <div className="review-actions">
                   <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: 12 }} onClick={() => startEdit(r)}>
