@@ -1,0 +1,15 @@
+{
+  "name": "studyforge-agent",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "briefing": "node morning-briefing.js",
+    "rebalance": "node weekly-rebalance.js",
+    "add-project": "node add-project.js",
+    "add-review": "node add-review.js",
+    "plan": "node plan-day.js"
+  }
+}
