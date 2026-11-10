@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node --test test/pipeline.test.js test/events-notes.test.js"
+    "test": "node --test test/pipeline.test.js test/events-notes.test.js test/dates.test.js"
   },
   "engines": {
     "node": ">=22.5.0"

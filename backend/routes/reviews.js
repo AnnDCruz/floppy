@@ -1,10 +1,11 @@
 const express = require("express");
 const db = require("../db/db");
+const { dateInTimeZone, addDays } = require("../utils/date");
 
 const router = express.Router();
 
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  return dateInTimeZone();
 }
 
 router.get("/", (req, res) => {
@@ -46,12 +47,11 @@ router.post("/", (req, res) => {
 router.post("/:id/mark-reviewed", (req, res) => {
   const item = db.prepare("SELECT * FROM review_items WHERE id = ?").get(req.params.id);
   if (!item) return res.status(404).json({ error: "Not found" });
-  const next = new Date();
-  next.setDate(next.getDate() + item.interval_days);
-  const nextDate = next.toISOString().slice(0, 10);
+  const reviewedOn = today();
+  const nextDate = addDays(reviewedOn, item.interval_days);
   db.prepare(
     "UPDATE review_items SET last_reviewed_date = ?, next_due_date = ?, review_count = review_count + 1 WHERE id = ?"
-  ).run(today(), nextDate, req.params.id);
+  ).run(reviewedOn, nextDate, req.params.id);
   res.json(db.prepare("SELECT * FROM review_items WHERE id = ?").get(req.params.id));
 });
 

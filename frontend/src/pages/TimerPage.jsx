@@ -15,7 +15,7 @@ export default function TimerPage({ subjects, projects, refreshKey }) {
   const [sessions, setSessions] = useState([]);
 
   const loadToday = async () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const { date: today } = await api.getClock();
     const rows = await api.getSessions({ date: today });
     setSessions(rows);
   };
