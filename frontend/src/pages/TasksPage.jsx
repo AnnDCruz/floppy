@@ -6,6 +6,12 @@ const PRIORITY_CLASS = { high: "priority-high", medium: "priority-medium", low: 
 const PRIORITY_LABEL = { high: "High", medium: "Medium", low: "Low" };
 const EMPTY = { title: "", area: "Coursework", due_date: "", est_hours: 1, priority: "medium" };
 
+function localToday() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
 function dueLabel(dateStr, today) {
   if (!dateStr) return "No due date";
   const diff = Math.round((new Date(dateStr + "T00:00:00Z") - new Date(today + "T00:00:00Z")) / 86400000);
@@ -17,17 +23,12 @@ function dueLabel(dateStr, today) {
 
 export default function TasksPage({ refreshKey }) {
   const [tasks, setTasks] = useState(null);
-  const [today, setToday] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [showAdd, setShowAdd] = useState(false);
   const [showDone, setShowDone] = useState(false);
   const [error, setError] = useState("");
 
-  const load = async () => {
-    const [rows, clock] = await Promise.all([api.getTasks(), api.getClock()]);
-    setTasks(rows);
-    setToday(clock.date);
-  };
+  const load = async () => setTasks(await api.getTasks());
 
   useEffect(() => {
     load();
@@ -64,8 +65,9 @@ export default function TasksPage({ refreshKey }) {
     await load();
   };
 
-  if (!tasks || !today) return <div className="loading-state">Loading tasks…</div>;
+  if (!tasks) return <div className="loading-state">Loading tasks…</div>;
 
+  const today = localToday();
   const open = tasks.filter((t) => t.status === "todo");
   const done = tasks.filter((t) => t.status === "done");
   const openHours = open.reduce((s, t) => s + t.est_hours, 0);

@@ -27,8 +27,8 @@ export function Dial({ size = 172, strokeWidth = 9, secondsLeft, totalSeconds, p
       >
         <defs>
           <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#7440c8" />
-            <stop offset="100%" stopColor="#4f1f96" />
+            <stop offset="0%" stopColor="#5b9bff" />
+            <stop offset="100%" stopColor="#2f66e0" />
           </linearGradient>
         </defs>
         <circle

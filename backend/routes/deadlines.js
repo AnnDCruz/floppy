@@ -1,6 +1,5 @@
 const express = require("express");
 const db = require("../db/db");
-const { dateInTimeZone } = require("../utils/date");
 
 const router = express.Router();
 
@@ -25,7 +24,7 @@ router.get("/", (req, res) => {
          ORDER BY d.due_date ASC
          LIMIT ?`
       )
-      .all(from || dateInTimeZone(), Number(upcoming));
+      .all(from || new Date().toISOString().slice(0, 10), Number(upcoming));
   } else {
     rows = db
       .prepare(

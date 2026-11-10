@@ -4,7 +4,6 @@
 
 const db = require("../db/db");
 const llm = require("./llm");
-const { dateInTimeZone, addDays } = require("../utils/date");
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const PRIORITIES = ["high", "medium", "low"];
@@ -12,7 +11,8 @@ const ACTIONS = ["add_task", "update_task", "complete_task"];
 const MAX_PROPOSALS = 6;
 
 function localDate(d = new Date()) {
-  return dateInTimeZone(d);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 function daysBetween(fromStr, toStr) {
@@ -28,7 +28,7 @@ function isRealDate(s) {
 // ---- context ---------------------------------------------------------------
 
 function gatherContext(today) {
-  const horizon = addDays(today, 21);
+  const horizon = localDate(new Date(new Date(today + "T00:00:00Z").getTime() + 21 * 86400000));
 
   const deadlines = db
     .prepare(
@@ -55,7 +55,7 @@ function gatherContext(today) {
     )
     .all(today);
 
-  const weekAgo = addDays(today, -7);
+  const weekAgo = localDate(new Date(new Date(today + "T00:00:00Z").getTime() - 7 * 86400000));
   const studied = db
     .prepare(
       `SELECT s.name AS subject, ROUND(SUM(x.duration_minutes) / 60.0, 1) AS hours

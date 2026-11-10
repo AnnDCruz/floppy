@@ -1,7 +1,6 @@
 const express = require("express");
 const db = require("../db/db");
 const { registerActivity } = require("../db/streak");
-const { dateInTimeZone } = require("../utils/date");
 
 const router = express.Router();
 
@@ -50,7 +49,7 @@ router.post("/", (req, res) => {
   if (!subj) return res.status(400).json({ error: "Unknown subject" });
 
   const now = new Date();
-  const finalDate = session_date || dateInTimeZone(now);
+  const finalDate = session_date || now.toISOString().slice(0, 10);
   const finalStartedAt = started_at || now.toISOString();
   const points = pointsForDuration(duration_minutes);
 

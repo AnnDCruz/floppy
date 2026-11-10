@@ -2,14 +2,24 @@ const express = require("express");
 const db = require("../db/db");
 const { getPointsBalance, getTotalPointsEarned } = require("../db/streak");
 const { levelForPoints } = require("../db/levels");
-const { dateInTimeZone, startOfWeek, addDays } = require("../utils/date");
 
 const router = express.Router();
 
+function startOfWeek(dateStr) {
+  // Monday-start week
+  const d = new Date(dateStr + "T00:00:00Z");
+  const day = d.getUTCDay(); // 0 Sun .. 6 Sat
+  const diff = (day === 0 ? -6 : 1) - day;
+  d.setUTCDate(d.getUTCDate() + diff);
+  return d.toISOString().slice(0, 10);
+}
+
 router.get("/", (req, res) => {
-  const today = dateInTimeZone();
+  const today = new Date().toISOString().slice(0, 10);
   const weekStart = startOfWeek(today);
-  const lastWeekStartStr = addDays(weekStart, -7);
+  const lastWeekStart = new Date(weekStart + "T00:00:00Z");
+  lastWeekStart.setUTCDate(lastWeekStart.getUTCDate() - 7);
+  const lastWeekStartStr = lastWeekStart.toISOString().slice(0, 10);
 
   const todayAgg = db
     .prepare(

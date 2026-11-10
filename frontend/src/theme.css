@@ -9,10 +9,10 @@
   --text:#f2f3f7;
   --text-muted:#b0b5c2;
   --text-faint:#7f8594;
-  --accent:#4f1f96;
-  --accent-hi:#6a35b8;
-  --amber:#b9a0f3;            /* legacy "amber" now reads as the light accent */
-  --amber-dim:#5a3f93;
+  --accent:#2f66e0;
+  --accent-hi:#386fe6;
+  --amber:#8fb8ff;            /* legacy "amber" now reads as the light blue accent */
+  --amber-dim:#2e4f94;
   --warn:#E8A33D;
   --pill-bg:rgba(30,33,40,0.78);
   --glass-base:rgba(16,24,40,0.36);
@@ -73,7 +73,7 @@ body::after{
 .nav-item:hover:not(.active){background:rgba(255,255,255,0.06);}
 .nav-footer{margin-top:auto; padding-top:16px; border-top:1px solid var(--line);}
 .streak-pill,.level-pill{background:rgba(255,255,255,0.05); border-color:var(--line);}
-.level-fill{background:linear-gradient(90deg, var(--accent-hi), #9b6cf0);}
+.level-fill{background:linear-gradient(90deg, var(--accent-hi), #8fb8ff);}
 .points-pill b{color:var(--amber);}
 
 /* ---------- Top pill (dashboard date/time, calendar month) ---------- */
@@ -141,7 +141,7 @@ select option{background:#1b1e26; color:#eee;}
 }
 .big-dial-svg,.dial-svg{position:relative; z-index:1;}
 .big-dial-center,.dial-center{z-index:2;}
-.big-dial-track,.dial-track{stroke:rgba(110,60,190,0.28);}
+.big-dial-track,.dial-track{stroke:rgba(79,134,247,0.28);}
 .big-dial-progress,.dial-progress{stroke:var(--accent-hi);}
 .big-dial-state,.dial-state{color:#fff; font-weight:700;}
 .big-dial-time{font-family:'Inter',sans-serif; font-weight:800;}
@@ -281,7 +281,7 @@ select option{background:#1b1e26; color:#eee;}
 .btn{transition:transform .16s ease, background .2s, border-color .2s, box-shadow .25s, color .2s;}
 .btn:hover:not(:disabled){transform:translateY(-1px);}
 .btn:active:not(:disabled){transform:scale(.95);}
-.btn-primary:hover:not(:disabled){box-shadow:0 8px 24px rgba(112,60,200,0.5);}
+.btn-primary:hover:not(:disabled){box-shadow:0 8px 24px rgba(56,111,230,0.5);}
 .menu-btn,.sq-btn{transition:transform .16s ease, background .2s, box-shadow .25s;}
 .menu-btn:hover,.sq-btn:hover{transform:translateY(-1px); box-shadow:inset 0 1px 0 rgba(255,255,255,0.4), 0 14px 38px rgba(0,0,0,0.38);}
 .menu-btn:active,.sq-btn:active{transform:scale(.93);}
@@ -299,8 +299,8 @@ select option{background:#1b1e26; color:#eee;}
 .cal-cell:hover::before{opacity:1;}
 .cal-date{transition:transform .2s ease, background .2s;}
 .cal-cell:hover .cal-date{transform:scale(1.15);}
-.cal-cell.today .cal-date{box-shadow:0 0 0 0 rgba(130,80,224,0.55); animation:pulse 2.6s ease-out infinite;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(130,80,224,0.55);} 70%,100%{box-shadow:0 0 0 12px rgba(130,80,224,0);}}
+.cal-cell.today .cal-date{box-shadow:0 0 0 0 rgba(79,134,247,0.55); animation:pulse 2.6s ease-out infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(79,134,247,0.55);} 70%,100%{box-shadow:0 0 0 12px rgba(79,134,247,0);}}
 
 /* --- timer: gentle ring transitions while running --- */
 .big-dial-progress,.dial-progress{transition:stroke-dashoffset .9s linear;}
@@ -388,3 +388,47 @@ select option{background:#1b1e26; color:#eee;}
 .bg-switch{display:flex; background:rgba(255,255,255,0.08); border-radius:11px; padding:3px;}
 .bg-switch button{flex:1; border:none; background:none; color:var(--text-muted); font-size:12.5px; font-weight:600; padding:8px; border-radius:9px; cursor:pointer; transition:background .2s, color .2s;}
 .bg-switch button.on{background:var(--accent); color:#fff;}
+
+/* =====================================================================
+   BLUE THROUGHOUT + PLASMA DIMMER + TYPOGRAPHY
+   ===================================================================== */
+:root{
+  --teal:#86b4ff;           /* the old teal text/badges are blue now */
+  --teal-dim:#3b5f9e;
+  --plasma-dim:0.2;         /* black overlay on the plasma: 0.2 = 80% transparent */
+}
+.save-state.saved{color:var(--amber);}
+
+/* black overlay over the plasma background */
+.bg-plasma::after{content:""; position:absolute; inset:0; pointer-events:none; background:rgba(0,0,0,var(--plasma-dim));}
+
+/* Cormorant Garamond for headings and numerals; body copy stays Inter */
+.display,.page-title,.panel-title,.brand-name,.cal-month,.modal-date,.toast-title,.level-name,
+.note-title-input,.notes-empty-title{
+  font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; letter-spacing:0;
+}
+.page-title{font-size:42px; line-height:1.05;}
+.panel-title{font-size:28px; line-height:1.1;}
+.modal-date{font-size:30px;}
+.cal-pill .cal-month{font-size:24px; letter-spacing:1.2px;}
+.toast-title{font-size:19px;}
+.level-name{font-size:18px;}
+.note-title-input{font-size:32px; line-height:1.2;}
+.notes-empty-title{font-size:28px;}
+
+.stat-value,.mini-stat-value,.donut-total,.dial-time,.big-dial-time,.cal-date,.pill-time,
+.card-stat-value,.streak-count,.points-pill b{
+  font-family:'Cormorant Garamond',Georgia,serif; font-weight:600; letter-spacing:0;
+  font-variant-numeric:lining-nums tabular-nums; font-feature-settings:"lnum" 1,"tnum" 1;
+}
+.stat-value{font-size:42px; line-height:1.05; margin-top:6px;}
+.mini-stat-value,.donut-total{font-size:28px;}
+.dial-time{font-size:42px; font-weight:700;}
+.big-dial-time{font-size:76px; letter-spacing:-0.5px;}
+.cal-date{font-size:22px;}
+.pill-time{font-size:19px;}
+.card-stat-value{font-size:22px;}
+.streak-count{font-size:20px;}
+.points-pill b{font-size:19px;}
+.interval-input-value{font-family:'Cormorant Garamond',Georgia,serif; font-size:24px; font-weight:600; font-variant-numeric:lining-nums tabular-nums; font-feature-settings:"lnum" 1,"tnum" 1;}
+
